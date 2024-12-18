@@ -7,4 +7,4 @@ CREATE DATABASE contactbook;
   -- psql -U postgres -f sql/create_database.sql
 
 -- Now connect to the new database and create the tables
-  -- psql -U postgres -d contactbook -f sql/init.sql
+  -- psql -U postgres -d contactbook -f sql/init.sqlpm
