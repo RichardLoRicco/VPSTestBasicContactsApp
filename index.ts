@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import * as db from './sql/db';
+import * as mongoDb from './mongo/db';
 import path from 'path';
 const app = express();
 
@@ -9,6 +10,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use(cors());
 
+// debate removing this
 app.use(express.static(path.join(__dirname, '../dist')));
 
 app.get('/', async (_req, res) => {
@@ -70,6 +72,42 @@ app.post('/reset', async (_req, res) => {
   try {
     await db.resetDatabase();
     res.json({ message: 'Database reset successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/counter', async (_req, res) => {
+  try {
+    const value = await mongoDb.getCounter();
+    res.json({value});
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/counter/increment', async (_req, res) => {
+  try {
+    const value = await mongoDb.incrementCounter();
+    res.json({value});
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/counter/decrement', async (_req, res) => {
+  try {
+    const value = await mongoDb.decrementCounter();
+    res.json({value});
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/counter/reset', async (_req, res) => {
+  try {
+    const value = await mongoDb.resetCounter();
+    res.json({value}  );
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
