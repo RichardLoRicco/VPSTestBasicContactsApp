@@ -48,10 +48,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const db = __importStar(require("./sql/db"));
+const mongoDb = __importStar(require("./mongo/db"));
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 const PORT = 3000;
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
+// debate removing this
+app.use(express_1.default.static(path_1.default.join(__dirname, '../dist')));
 app.get('/', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const contacts = yield db.retrieveContacts();
@@ -116,6 +120,45 @@ app.post('/reset', (_req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ error: 'Internal server error' });
     }
 }));
+app.get('/counter', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const value = yield mongoDb.getCounter();
+        res.json({ value });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}));
+app.post('/counter/increment', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const value = yield mongoDb.incrementCounter();
+        res.json({ value });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}));
+app.post('/counter/decrement', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const value = yield mongoDb.decrementCounter();
+        res.json({ value });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}));
+app.post('/counter/reset', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const value = yield mongoDb.resetCounter();
+        res.json({ value });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}));
+app.get('*', (_req, res) => {
+    res.sendFile(path_1.default.join(__dirname, 'dist', 'index.html'));
+});
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
